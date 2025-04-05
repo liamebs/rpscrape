@@ -1,0 +1,54 @@
+Feature,Type,Description
+course,Categorical,Racecourse identifier
+country,Categorical,"Country code (GB, IRE)"
+going,Categorical,"Surface condition (e.g. Good, Soft)"
+GoingStick,Numerical,Numeric ground firmness index
+distance_f,Numerical,Distance in furlongs
+field_size,Numerical,Number of runners in race
+race_class,Categorical,Race classification (1-6)
+type,Categorical,"Race type (e.g. Chase, Flat)"
+draw,Numerical,Draw position in the race
+age,Numerical,Horse age in years
+sex,Categorical,Sex of the horse
+or,Numerical,Official Rating
+rpr,Numerical,Racing Post Rating
+ts,Numerical,Topspeed figure
+lbs,Numerical,Weight carried in pounds
+headgear,Categorical,Any headgear being worn
+last_run,Numerical,Days since last race
+form,String,Recent race results pattern (e.g. 2-3-1-0)
+course_wins,Numerical,Horse wins at this course
+course_runs,Numerical,Total course runs
+distance_wins,Numerical,Wins at this distance
+going_wins,Numerical,Wins on this going type
+is_course_winner,Binary,Flag if horse has won at this course
+is_trip_winner,Binary,Flag if horse has won over this distance
+is_going_winner,Binary,Flag if horse has won on this going
+trainer_id,Categorical,Trainer ID
+trainer_rtf,Numerical,Trainer RTF % (Run to Form)
+trainer_last_14_runs,Numerical,Last 14 runs
+trainer_last_14_wins,Numerical,Last 14 wins
+trainer_last_14_win_pct,Numerical,Win % over last 14 runs
+trainer_last_14_profit,Numerical,Profit over last 14 runs
+trainer_ovr_runs,Numerical,Total trainer runs
+trainer_ovr_wins,Numerical,Total trainer wins
+trainer_ovr_win_pct,Numerical,Total trainer win rate
+trainer_ovr_profit,Numerical,Trainer lifetime profit
+jockey_id,Categorical,Jockey ID
+jockey_last_14_runs,Numerical,Last 14 runs
+jockey_last_14_wins,Numerical,Last 14 wins
+jockey_last_14_win_pct,Numerical,Win % over last 14 runs
+jockey_last_14_profit,Numerical,Profit over last 14 runs
+jockey_ovr_runs,Numerical,Total jockey runs
+jockey_ovr_wins,Numerical,Total jockey wins
+jockey_ovr_win_pct,Numerical,Total jockey win rate
+jockey_ovr_profit,Numerical,Jockey lifetime profit
+comment,Text,Short recent race commentary
+spotlight,Text,Racing Post's narrative summary
+comment_sentiment,Numerical,Optional NLP-generated score
+spotlight_embedding,Vector,Optional NLP vector embedding
+rpr_rank,Numerical,Rank of RPR in the race
+or_diff_from_avg,Numerical,OR minus race average OR
+draw_rank,Numerical,Draw rank in the field
+trainer_form_percentile_in_race,Numerical,Trainer 14d win % rank
+going_delta,Numerical,How GoingStick differs from course median

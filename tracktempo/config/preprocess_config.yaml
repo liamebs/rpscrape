@@ -1,0 +1,14 @@
+
+data:
+  raw_dir: "data/raw"
+  output_dir: "data/processed/2025/03"
+  embed_dir: "data/embeddings"
+
+nlp:
+  use_spacy: true
+  vectorizer: "tfidf"
+  ner_flags: true
+
+flags:
+  save_csv: true
+  save_pkl: true
