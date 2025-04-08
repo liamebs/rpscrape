@@ -20,9 +20,8 @@ from utils.training.loss_factory import get_loss_function
 
 parser = argparse.ArgumentParser(description="Train TrackTempo Transformer")
 parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
-parser.add_argument("--loss_type", type=str, choices=["bce", "cross_entropy"], default="bce", help="Loss function type")
+parser.add_argument("--loss_type", type=str, choices=["bce", "cross_entropy", "ranking"], default="bce", help="Loss function type")
 parser.add_argument("--save_dir", type=str, default="checkpoints", help="Where to save model checkpoints")
-# Future hyperparameter: parser.add_argument("--min_runners", type=int, default=5, help="Minimum number of runners per race")
 args = parser.parse_args()
 
 def main():
@@ -36,7 +35,7 @@ def main():
     nlp_cols = ["comment_vector", "spotlight_vector"]
     label_col = "winner_index" if args.loss_type == "cross_entropy" else "winner_flag"
 
-    batches = batch_races(df, float_cols, cat_cols, nlp_cols, label_col=label_col, min_runners=5)  # 👈 Enforce 5+ runners
+    batches = batch_races(df, float_cols, cat_cols, nlp_cols, label_col=label_col, min_runners=5)
     dataset = RaceDataset(batches, include_target=True)
     train_loader = DataLoader(dataset, batch_size=1, shuffle=True)
 
@@ -79,8 +78,9 @@ def main():
                 logits = logits.squeeze(1)
                 target = target.view(-1)
 
-            elif args.loss_type == "bce" and target.dim() == 1:
-                target = target.unsqueeze(0)
+            elif args.loss_type in ["bce", "ranking"]:
+                if target.dim() == 1:
+                    target = target.unsqueeze(0)  # [R] → [1, R]
 
             loss = criterion(logits, target)
             loss.backward()
