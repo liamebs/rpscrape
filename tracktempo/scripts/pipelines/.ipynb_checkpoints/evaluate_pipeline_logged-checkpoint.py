@@ -7,7 +7,6 @@ import pandas as pd
 import json
 from pathlib import Path
 from tqdm import tqdm
-from datetime import datetime
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(PROJECT_ROOT))
@@ -37,16 +36,6 @@ def evaluate(model, loader, loss_type):
 
     with torch.no_grad():
         for batch in tqdm(loader, desc="Evaluating"):
-            try:
-                if "winner_index" in batch:
-                    target = torch.tensor([batch["winner_index"]], dtype=torch.long)
-                else:
-                    target = torch.tensor(batch["winner_flag"], dtype=torch.float32).unsqueeze(0)
-                batch["targets"] = target
-            except KeyError:
-                print("⚠️  Skipping batch: missing winner label")
-                continue
-
             logits = model(
                 batch["float_feats"],
                 batch["idx_feats"],
@@ -71,22 +60,13 @@ def evaluate(model, loader, loss_type):
             all_preds.append(pred.item())
             all_trues.append(true.item())
 
-            acc = top1_hits / total
-        
-        if total == 0:
-            print("⚠️  No valid batches to evaluate.")
-            return {
-                "top1_accuracy": None,
-                "total_evaluated": 0,
-                "all_preds": [],
-                "all_trues": []
-            }
-            return {
-                "top1_accuracy": round(acc, 4),
-                "total_evaluated": total,
-                "all_preds": all_preds,
-                "all_trues": all_trues
-            }
+    acc = top1_hits / total
+    return {
+        "top1_accuracy": round(acc, 4),
+        "total_evaluated": total,
+        "all_preds": all_preds,
+        "all_trues": all_trues
+    }
 
 def main():
     print("[+] Loading data and encoders...")
@@ -96,7 +76,7 @@ def main():
     float_cols = [c for c in df.columns if "_zscore" in c or "_rank" in c or c.startswith("mentions_")]
     cat_cols = list(encoders.keys())
     nlp_cols = ["comment_vector", "spotlight_vector"]
-    label_col = "winner_flag"  # for all eval, predict winner_flag as binary
+    label_col = "winner_index" if "ce" in args.model or "hybrid" in args.model else "winner_flag"
 
     batches = batch_races(df, float_cols, cat_cols, nlp_cols, label_col=label_col, exclude_non_runners=True)
     dataset = RaceDataset(batches, include_target=True)

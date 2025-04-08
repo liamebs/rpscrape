@@ -8,6 +8,7 @@ from pathlib import Path
 from torch.utils.data import DataLoader
 from datetime import datetime
 from tqdm import tqdm
+import json
 
 # Project setup
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -27,6 +28,9 @@ parser.add_argument("--rank_weight", type=float, default=0.3, help="Weight of Ra
 parser.add_argument("--margin", type=float, default=1.0, help="Margin for ranking loss")
 args = parser.parse_args()
 
+timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+
+
 def main():
     print("[+] Loading training data and encoders...")
     df = pd.read_pickle("data/processed/2025/03/model_ready_train.pkl")
@@ -38,6 +42,13 @@ def main():
     nlp_cols = ["comment_vector", "spotlight_vector"]
     label_col = "winner_index" if args.loss_type == "cross_entropy" else "winner_flag"
 
+    # Save float feature columns
+    float_cols_path = "data/processed/float_cols_2025-04-08.json"
+    with open(float_cols_path, "w") as f:
+        json.dump(float_cols, f)
+    print(f"[+] Saved float feature columns to {float_cols_path}")
+
+    
     batches = batch_races(df, float_cols, cat_cols, nlp_cols, label_col=label_col, min_runners=5)
     dataset = RaceDataset(batches, include_target=True)
     train_loader = DataLoader(dataset, batch_size=1, shuffle=True)
