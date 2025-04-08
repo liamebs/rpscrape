@@ -20,8 +20,11 @@ from utils.training.loss_factory import get_loss_function
 
 parser = argparse.ArgumentParser(description="Train TrackTempo Transformer")
 parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
-parser.add_argument("--loss_type", type=str, choices=["bce", "cross_entropy", "ranking"], default="bce", help="Loss function type")
+parser.add_argument("--loss_type", type=str, choices=["bce", "cross_entropy", "ranking", "hybrid"], default="bce", help="Loss function type")
 parser.add_argument("--save_dir", type=str, default="checkpoints", help="Where to save model checkpoints")
+parser.add_argument("--ce_weight", type=float, default=0.7, help="Weight of CrossEntropy loss in hybrid mode")
+parser.add_argument("--rank_weight", type=float, default=0.3, help="Weight of Ranking loss in hybrid mode")
+parser.add_argument("--margin", type=float, default=1.0, help="Margin for ranking loss")
 args = parser.parse_args()
 
 def main():
@@ -53,10 +56,13 @@ def main():
     criterion = get_loss_function(args)
 
     timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    checkpoint_dir = Path(args.save_dir) / f"transformer_{timestamp}"
+    checkpoint_dir = Path(args.save_dir) / f"transformer_{args.loss_type}_{timestamp}"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     print("[+] Starting training...")
+    best_loss = float("inf")
+    best_path = checkpoint_dir / "best.pt"
+
     for epoch in range(1, args.epochs + 1):
         model.train()
         total_loss = 0
@@ -73,16 +79,18 @@ def main():
             )
 
             target = batch["targets"]
+            if args.loss_type in ["bce", "ranking", "hybrid"] and target.dim() == 1:
+                target = target.unsqueeze(0)
 
             if args.loss_type == "cross_entropy":
                 logits = logits.squeeze(1)
                 target = target.view(-1)
 
-            elif args.loss_type in ["bce", "ranking"]:
-                if target.dim() == 1:
-                    target = target.unsqueeze(0)  # [R] → [1, R]
+            if args.loss_type == "hybrid":
+                loss = criterion(logits, target, target)  # Use same binary mask for CE + Ranking
+            else:
+                loss = criterion(logits, target)
 
-            loss = criterion(logits, target)
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
@@ -90,10 +98,10 @@ def main():
         avg_loss = total_loss / len(train_loader)
         print(f"[Epoch {epoch}] Loss: {avg_loss:.4f}")
 
-        if epoch == 1 or epoch % 5 == 0 or epoch == args.epochs:
-            save_path = checkpoint_dir / f"epoch_{epoch}.pt"
-            torch.save(model.state_dict(), save_path)
-            print(f"[✓] Saved checkpoint: {save_path}")
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            torch.save(model.state_dict(), best_path)
+            print(f"[✓] New best checkpoint saved: {best_path} (loss: {best_loss:.4f})")
 
 if __name__ == "__main__":
     main()

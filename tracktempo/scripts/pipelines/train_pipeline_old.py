@@ -1,4 +1,3 @@
-
 import sys
 import os
 import torch
@@ -8,6 +7,7 @@ import pandas as pd
 from pathlib import Path
 from torch.utils.data import DataLoader
 from datetime import datetime
+from tqdm import tqdm
 
 # Project setup
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -20,7 +20,7 @@ from utils.training.loss_factory import get_loss_function
 
 parser = argparse.ArgumentParser(description="Train TrackTempo Transformer")
 parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
-parser.add_argument("--loss_type", type=str, choices=["bce", "cross_entropy"], default="bce", help="Loss function type")
+parser.add_argument("--loss_type", type=str, choices=["bce", "cross_entropy", "ranking"], default="bce", help="Loss function type")
 parser.add_argument("--save_dir", type=str, default="checkpoints", help="Where to save model checkpoints")
 args = parser.parse_args()
 
@@ -33,9 +33,9 @@ def main():
     float_cols = [col for col in df.columns if "_zscore" in col or "_rank" in col or col.startswith("mentions_")]
     cat_cols = list(encoders.keys())
     nlp_cols = ["comment_vector", "spotlight_vector"]
-
     label_col = "winner_index" if args.loss_type == "cross_entropy" else "winner_flag"
-    batches = batch_races(df, float_cols, cat_cols, nlp_cols, label_col=label_col)
+
+    batches = batch_races(df, float_cols, cat_cols, nlp_cols, label_col=label_col, min_runners=5)
     dataset = RaceDataset(batches, include_target=True)
     train_loader = DataLoader(dataset, batch_size=1, shuffle=True)
 
@@ -61,29 +61,27 @@ def main():
         model.train()
         total_loss = 0
 
-        for batch in train_loader:
+        for batch in tqdm(train_loader, desc=f"Epoch {epoch}"):
             optimizer.zero_grad()
 
             logits = model(
-                batch["float_feats"],         # ✅ float features
-                batch["idx_feats"],           # ✅ embedding indices
-                batch["comment_vecs"],        # ✅ NLP 1
-                batch["spotlight_vecs"],      # ✅ NLP 2
-                batch["mask"]                 # ✅ mask
+                batch["float_feats"],
+                batch["idx_feats"],
+                batch["comment_vecs"],
+                batch["spotlight_vecs"],
+                batch["mask"]
             )
 
             target = batch["targets"]
 
             if args.loss_type == "cross_entropy":
                 logits = logits.squeeze(1)
-                target = target.view(-1)  # [1]
-            
-            elif args.loss_type == "bce":
-                # Make sure it's shape [1, R]
+                target = target.view(-1)
+
+            elif args.loss_type in ["bce", "ranking"]:
                 if target.dim() == 1:
                     target = target.unsqueeze(0)  # [R] → [1, R]
 
-              
             loss = criterion(logits, target)
             loss.backward()
             optimizer.step()
