@@ -6,6 +6,7 @@ Each batch is a dict of numpy arrays [B, R, ...]
 """
 
 import numpy as np
+import torch
 
 def batch_races(df, float_cols, idx_cols, nlp_cols, exclude_non_runners=True, label_col=None, min_runners=1):
     """
@@ -38,10 +39,13 @@ def batch_races(df, float_cols, idx_cols, nlp_cols, exclude_non_runners=True, la
         R = len(race)
 
         batch_dict = {
-            "float_features": np.stack(race[float_cols].values).astype(np.float32),  # [R, F]
-            "embedding_indices": race[idx_cols].values.astype(np.int64),             # [R, E]
-            "mask": np.ones((R,), dtype=np.int64)                                    # [R]
+            "float_features": torch.tensor(race[float_cols].values, dtype=torch.float32),
+            "embedding_indices": torch.tensor(race[idx_cols].values, dtype=torch.int64),
+            "comment_vecs": torch.tensor(np.stack(race["comment_vector"].values), dtype=torch.float32),
+            "spotlight_vecs": torch.tensor(np.stack(race["spotlight_vector"].values), dtype=torch.float32),
+            "mask": torch.ones(len(race), dtype=torch.bool),  # assume all real runners
         }
+
 
         for col in nlp_cols:
             batch_dict[col] = np.stack(race[col].values).astype(np.float32)          # [R, D]
