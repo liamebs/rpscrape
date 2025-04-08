@@ -32,7 +32,7 @@ SAVE_PKL = cfg["flags"]["save_pkl"]
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def flatten_json_files(raw_dir):
-    from flattening.flatten_day_batch_pkl import run_batch_flatten
+    from utils.preprocessing.flatten_day_batch_pkl import run_batch_flatten
     run_batch_flatten()
     processed_dir = PROJECT_ROOT / "data" / "processed"
     pkl_files = sorted(processed_dir.glob("*.pkl"), key=lambda p: p.stat().st_mtime, reverse=True)

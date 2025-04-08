@@ -75,8 +75,8 @@ def run_batch_flatten():
         final_df = add_relative_features(final_df)
 
         timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M")
-        csv_file = output_dir / f"{timestamp}.csv"
-        pkl_file = output_dir / f"{timestamp}.pkl"
+        csv_file = output_dir / f"flattened_json_{timestamp}.csv"
+        pkl_file = output_dir / f"flattened_json_{timestamp}.pkl"
 
         final_df.to_csv(csv_file, index=False)
         final_df.to_pickle(pkl_file)
