@@ -1,0 +1,101 @@
+
+import sys
+import os
+import torch
+import joblib
+import argparse
+import pandas as pd
+from pathlib import Path
+from torch.utils.data import DataLoader
+from datetime import datetime
+
+# Project setup
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(PROJECT_ROOT))
+
+from utils.batching.batch_races import batch_races
+from utils.training.dataloader_utils import RaceDataset
+from modeling.transformer_model import RaceTransformer
+from utils.training.loss_factory import get_loss_function
+
+parser = argparse.ArgumentParser(description="Train TrackTempo Transformer")
+parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
+parser.add_argument("--loss_type", type=str, choices=["bce", "cross_entropy"], default="bce", help="Loss function type")
+parser.add_argument("--save_dir", type=str, default="checkpoints", help="Where to save model checkpoints")
+args = parser.parse_args()
+
+def main():
+    print("[+] Loading training data and encoders...")
+    df = pd.read_pickle("data/processed/2025/03/model_ready_train.pkl")
+    encoders = joblib.load("data/processed/embedding_encoders_2025-04-08T09-43.pkl")
+
+    print("[+] Preparing batches...")
+    float_cols = [col for col in df.columns if "_zscore" in col or "_rank" in col or col.startswith("mentions_")]
+    cat_cols = list(encoders.keys())
+    nlp_cols = ["comment_vector", "spotlight_vector"]
+
+    label_col = "winner_index" if args.loss_type == "cross_entropy" else "winner_flag"
+    batches = batch_races(df, float_cols, cat_cols, nlp_cols, label_col=label_col)
+    dataset = RaceDataset(batches, include_target=True)
+    train_loader = DataLoader(dataset, batch_size=1, shuffle=True)
+
+    print("[+] Initializing model and optimizer...")
+    model = RaceTransformer(
+        label_encoders=encoders,
+        float_dim=len(float_cols),
+        embedding_dim=32,
+        nlp_dim=384,
+        hidden_dim=64,
+        nhead=4,
+        num_layers=2,
+    )
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+    criterion = get_loss_function(args)
+
+    timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    checkpoint_dir = Path(args.save_dir) / f"transformer_{timestamp}"
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
+    print("[+] Starting training...")
+    for epoch in range(1, args.epochs + 1):
+        model.train()
+        total_loss = 0
+
+        for batch in train_loader:
+            optimizer.zero_grad()
+
+            logits = model(
+                batch["float_feats"],         # ✅ float features
+                batch["idx_feats"],           # ✅ embedding indices
+                batch["comment_vecs"],        # ✅ NLP 1
+                batch["spotlight_vecs"],      # ✅ NLP 2
+                batch["mask"]                 # ✅ mask
+            )
+
+            target = batch["targets"]
+
+            if args.loss_type == "cross_entropy":
+                logits = logits.squeeze(1)
+                target = target.view(-1)  # [1]
+            
+            elif args.loss_type == "bce":
+                # Make sure it's shape [1, R]
+                if target.dim() == 1:
+                    target = target.unsqueeze(0)  # [R] → [1, R]
+
+              
+            loss = criterion(logits, target)
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+
+        avg_loss = total_loss / len(train_loader)
+        print(f"[Epoch {epoch}] Loss: {avg_loss:.4f}")
+
+        if epoch == 1 or epoch % 5 == 0 or epoch == args.epochs:
+            save_path = checkpoint_dir / f"epoch_{epoch}.pt"
+            torch.save(model.state_dict(), save_path)
+            print(f"[✓] Saved checkpoint: {save_path}")
+
+if __name__ == "__main__":
+    main()

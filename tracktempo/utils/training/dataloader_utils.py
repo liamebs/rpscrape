@@ -1,8 +1,3 @@
-"""
-utils/training/dataloader_utils.py
-
-Reusable PyTorch Dataset for race batching with optional targets.
-"""
 
 import torch
 from torch.utils.data import Dataset
@@ -17,13 +12,19 @@ class RaceDataset(Dataset):
 
     def __getitem__(self, idx):
         b = self.batches[idx]
+
         batch = {
-            "float_feats": torch.tensor(b["float_features"], dtype=torch.float32),
-            "idx_feats": torch.tensor(b["embedding_indices"], dtype=torch.long),
-            "comment_vecs": torch.tensor(b["comment_vector"], dtype=torch.float32),
-            "spotlight_vecs": torch.tensor(b["spotlight_vector"], dtype=torch.float32),
-            "mask": torch.tensor(b["mask"], dtype=torch.bool)
+            "float_feats": b["float_features"].clone().detach().float(),
+            "idx_feats": b["embedding_indices"].clone().detach().long(),
+            "comment_vecs": b["comment_vecs"].clone().detach().float(),
+            "spotlight_vecs": b["spotlight_vecs"].clone().detach().float(),
+            "mask": b["mask"].clone().detach().bool(),
         }
-        if self.include_target and "winner_flag" in b:
-            batch["targets"] = torch.tensor(b["winner_flag"], dtype=torch.float32)
+
+        if self.include_target:
+            if "winner_flag" in b:
+                batch["targets"] = torch.tensor(b["winner_flag"], dtype=torch.float32)
+            elif "winner_index" in b:
+                batch["targets"] = torch.tensor(b["winner_index"], dtype=torch.long)
+
         return batch

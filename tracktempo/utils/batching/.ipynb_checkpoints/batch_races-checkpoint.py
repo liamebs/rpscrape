@@ -7,6 +7,7 @@ Each batch is a dict of numpy arrays [B, R, ...]
 
 import numpy as np
 import torch
+import pandas as pd
 
 def batch_races(df, float_cols, idx_cols, nlp_cols, exclude_non_runners=True, label_col=None, min_runners=1):
     """
@@ -38,6 +39,9 @@ def batch_races(df, float_cols, idx_cols, nlp_cols, exclude_non_runners=True, la
         race = race.sort_values("draw" if "draw" in race.columns else "name")
         R = len(race)
 
+        # 🛠 Fix type coercion for embedding indices
+        race[idx_cols] = race[idx_cols].apply(pd.to_numeric, errors="coerce").fillna(0).astype("int64")
+
         batch_dict = {
             "float_features": torch.tensor(race[float_cols].values, dtype=torch.float32),
             "embedding_indices": torch.tensor(race[idx_cols].values, dtype=torch.int64),
@@ -51,7 +55,10 @@ def batch_races(df, float_cols, idx_cols, nlp_cols, exclude_non_runners=True, la
             batch_dict[col] = np.stack(race[col].values).astype(np.float32)          # [R, D]
 
         if label_col and label_col in race.columns:
-            batch_dict["winner_flag"] = race[label_col].values.astype(np.float32)    # [R]
+            if label_col == "winner_index":
+                batch_dict["winner_index"] = int(race[label_col].iloc[0])
+            else:
+                batch_dict["winner_flag"] = race[label_col].values.astype(np.float32)  # [R]
 
         batches.append(batch_dict)
 
