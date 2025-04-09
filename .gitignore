@@ -1,32 +1,21 @@
-# IDEs
-.idea/                         # IntelliJ/PyCharm project settings
-.vscode/                       # VS Code settings and workspace configs
+# Artifacts
+tracktempo/checkpoints/
+tracktempo/logs/
+tracktempo/data/
+*.pt
+*.csv
+*.npz
+*.joblib
+*.pdf
 
-# Python
-__pycache__/                   # Compiled bytecode cache
-tracktempo/**/__pycache__/     # Python bytecode caches inside any subfolder
-*.pyc                          # Python compiled files
-*.pyo                          # Optimized Python compiled files
-*.pyd                          # Windows Python dynamic libs
-*.egg-info/                    # Package metadata
-dist/                          # Distribution folder (e.g., wheels, tarballs)
-build/                         # Build artifacts from setup.py or setuptools
+# Notebooks & junk
+*.ipynb
+.ipynb_checkpoints/
 
-# macOS
-.DS_Store                      # Finder metadata (safe to ignore)
+# Caches and compiled files
+**/__pycache__/
+*.pyc
 
-# User/local config
-.env                           # General environment file (local secrets, etc.)
-.env.*                         # Any env file variants (e.g., .env.dev, .env.local)
-settings/user_settings.toml   # Personal runtime config (e.g., tuning paths)
+# Embedded Git repo (scraping)
+scraping/
 
-# Data / Artifacts
-data/                          # Input/output data for training, models, etc.
-
-# rpscraping tools separated from dev git,
-# in their own repository from 20250409:
-scraping/                      # Scraping tools + scrapes — now managed elsewhere
-
-# intend to use jupyter notebooks as scratchpads
-# from 20250409, not part of versioned code.
-*.ipynb                        # Local-only Jupyter notebooks (not tracked)
