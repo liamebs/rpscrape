@@ -4,6 +4,7 @@
 
 # Python
 __pycache__/                   # Compiled bytecode cache
+tracktempo/**/__pycache__/     # Python bytecode caches inside any subfolder
 *.pyc                          # Python compiled files
 *.pyo                          # Optimized Python compiled files
 *.pyd                          # Windows Python dynamic libs
