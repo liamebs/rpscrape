@@ -37,7 +37,7 @@ timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
 def main():
     print("[+] Loading training data and encoders...")
-    df = pd.read_pickle("data/processed/2025/03/model_ready_train.pkl")
+    df = pd.read_pickle("data/processed/model_ready_train_2025-04-06T04-16.pkl")
     encoders = joblib.load("data/processed/embedding_encoders_2025-04-08T09-43.pkl")
 
     race_ids = df["race_id"].unique()
