@@ -32,8 +32,17 @@ parser.add_argument("--margin", type=float, default=1.0, help="Margin for rankin
 parser.add_argument("--patience", type=int, default=5, help="Early stopping patience (epochs without improvement)")
 args = parser.parse_args()
 
-timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+# Validate hybrid loss weights
+if args.loss_type != "hybrid":
+    if args.ce_weight != 0.7 or args.rank_weight != 0.3:
+        raise ValueError("ce_weight and rank_weight are only applicable for hybrid loss")
+else:
+    if not (0.0 <= args.ce_weight <= 1.0 and 0.0 <= args.rank_weight <= 1.0):
+        raise ValueError("ce_weight and rank_weight must be between 0.0 and 1.0")
+    if not abs(args.ce_weight + args.rank_weight - 1.0) < 1e-6:
+        raise ValueError("ce_weight and rank_weight must sum to 1.0 for hybrid loss")
 
+timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
 def main():
     print("[+] Loading training data and encoders...")
