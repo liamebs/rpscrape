@@ -1,0 +1,275 @@
+.
+├── analysis
+│   ├── merging_results_and_inference_dataset
+│   │   ├── fuzzy_merge_inference_and_results.py
+│   │   ├── non_matching_inference_rows.csv
+│   │   ├── non_matching_result_rows.csv
+│   │   └── to_run_fuzzy_merge_script_20250404.ipynb
+│   └── side_by_side_comparison.csv
+├── branding
+│   ├── tracktempo_branding.pdf
+│   └── tracktempo_logo.png
+├── checkpoints
+│   ├── transformer_bce_2025-04-09T13-00-25
+│   │   ├── best.pt
+│   │   ├── losses.csv
+│   │   └── loss_plot.png
+│   ├── transformer_cross_entropy_2025-04-09T12-55-39
+│   │   ├── best.pt
+│   │   ├── losses.csv
+│   │   └── loss_plot.png
+│   ├── transformer_hybrid_2025-04-09T13-05-40
+│   │   ├── best.pt
+│   │   ├── losses.csv
+│   │   └── loss_plot.png
+│   └── transformer_ranking_2025-04-09T12-58-25
+│       ├── best.pt
+│       ├── losses.csv
+│       └── loss_plot.png
+├── config
+│   └── preprocess_config.yaml
+├── create_yaml_file_structure.ipynb
+├── data
+│   ├── audits
+│   │   ├── audit_20250405_0425.zip
+│   │   ├── audit_dashboard_app.py
+│   │   └── README.txt
+│   ├── inference
+│   │   ├── bce_preds.json
+│   │   ├── ce_preds.json
+│   │   ├── enriched_bce.csv
+│   │   ├── enriched_ce.csv
+│   │   ├── enriched_hybrid.csv
+│   │   ├── enriched_ranking.csv
+│   │   ├── hybrid_preds.json
+│   │   └── ranking_preds.json
+│   ├── master
+│   ├── processed
+│   │   ├── 2025
+│   │   │   └── 03
+│   │   │       ├── embedding_encoders_2025-04-05T18-48.pkl
+│   │   │       ├── inference_dataset_2025-04-05T18-48.csv
+│   │   │       ├── inference_dataset_2025-04-05T18-48.pkl
+│   │   │       ├── __init__.py
+│   │   │       ├── model_ready_train.csv
+│   │   │       ├── model_ready_train.pkl
+│   │   │       ├── text_embeddings_2025-04-05T18-48.npz
+│   │   │       └── Untitled.ipynb
+│   │   ├── embedding_encoders_2025-04-08T09-43.pkl
+│   │   ├── embedding_encoders_2025-04-08T21-22.pkl
+│   │   ├── flattened_json_2025-04-08T09-42.csv
+│   │   ├── flattened_json_2025-04-08T09-42.pkl
+│   │   ├── flattened_json_2025-04-08T21-22.csv
+│   │   ├── flattened_json_2025-04-08T21-22.pkl
+│   │   ├── float_cols_2025-04-08.json
+│   │   ├── float_feature_list_2025-04-08T21-29.joblib
+│   │   ├── inference_dataset_2025-04-08T09-43.csv
+│   │   ├── inference_dataset_2025-04-08T09-43.pkl
+│   │   ├── inference_dataset_2025-04-08T21-22.csv
+│   │   ├── inference_dataset_2025-04-08T21-22.pkl
+│   │   ├── missing_races.csv
+│   │   ├── model_ready_train_2025-04-06T04-16.csv
+│   │   ├── model_ready_train_2025-04-06T04-16.pkl
+│   │   ├── test
+│   │   │   ├── 2025-03-31T17-22.csv
+│   │   │   ├── 2025-03-31T17-22.pkl
+│   │   │   ├── embedding_encoders_2025-03-31.pkl
+│   │   │   ├── model_ready_2025-03-31T17-49.csv
+│   │   │   ├── model_ready_2025-03-31T17-49.pkl
+│   │   │   └── text_embeddings_2025-03-31.npz
+│   │   ├── text_embeddings_2025-04-08T09-43.npz
+│   │   ├── text_embeddings_2025-04-08T21-22.npz
+│   │   ├── unmatched.csv
+│   │   ├── Untitled1.ipynb
+│   │   └── Untitled.ipynb
+│   └── raw
+│       ├── 2025
+│       │   └── 03
+│       │       ├── 2025-03-26T08-58.json
+│       │       ├── 2025-03-27T07-37.json
+│       │       ├── 2025-03-28T04-59.json
+│       │       ├── 2025-03-29T04-58.json
+│       │       ├── 2025-03-30T04-57.json
+│       │       └── 2025-03-31T04-51.json
+│       └── 2025_03_25-2025_04_01.csv
+├── eval_logs
+│   ├── metrics_trainset_bce_2025-04-08T20-13-04.json
+│   ├── metrics_trainset_cross_entropy_2025-04-08T20-15-45.json
+│   ├── metrics_trainset_hybrid_2025-04-08T20-17-17.json
+│   └── metrics_trainset_ranking_2025-04-08T20-16-33.json
+├── evaluate_transformer_20250402.ipynb
+├── features
+│   ├── feature_extractor_stub.py
+│   ├── features_catalog.csv
+│   ├── future_features_todo.md
+│   └── rpr_or_analysis_report_FINAL.md
+├── file_structure.txt
+├── for_chatgpt
+│   ├── 20250326_tracktempo_transformer_summary.pdf
+│   ├── dynamic_padding_batching_guide.pdf
+│   ├── model_ready_2025-03_validation_summary.pdf
+│   ├── pipeline_summary_finalized_2025-03-31.pdf
+│   ├── preprocessing_pipeline_plan.pdf
+│   ├── preprocessing_pipeline_summary_2025-03-31.pdf
+│   ├── preprocessing_pipeline_test_20250331.ipynb
+│   ├── README.md
+│   └── tracktempo_transformer_lifecycle_overview.pdf
+├── learning
+│   └── racing_modeling_journey_and_capabilities.pdf
+├── logs
+│   ├── 20250402
+│   │   ├── transformer_daily_summary_2025-04-02.pdf
+│   │   └── transformer_project_refresher_summary.pdf
+│   ├── 20250405
+│   │   └── tracktempo_tooling_summary.pdf
+│   ├── 20250406
+│   │   ├── TrackTempo_Automation_Summary.pdf
+│   │   └── TrackTempo_Evaluation_Pipeline_Plan.pdf
+│   ├── 20250407
+│   │   └── TrackTempo_Loss_Function_Strategies.pdf
+│   ├── 20250408
+│   │   ├── Advanced_Loss_Functions_Summary.pdf
+│   │   └── tracktempo_inference_pipeline_review.pdf
+│   ├── 20250409
+│   │   ├── Inference_Pipeline_Overview.pdf
+│   │   └── training_chat_summary.pdf
+│   ├── 20250411
+│   │   └── tracktempo_infer_pipeline_summary.pdf
+│   └── 2025Mar
+│       ├── 20250326
+│       │   ├── 20250326_keywords.pdf
+│       │   └── 20250326_tracktempo_transformer_summary.pdf
+│       ├── 20250327
+│       │   └── tracktempo_rpr_signal_log_FULL_2025-03-27.pdf
+│       ├── 20250328
+│       │   ├── daily_summary_2025-03-28.pdf
+│       │   └── keywords_summary_2025-03-28.pdf
+│       ├── 20250329
+│       │   ├── daily_summary_pipeline_2025-03-29.pdf
+│       │   └── json_to_transformer_pipeline.pdf
+│       ├── 20250330
+│       │   ├── tracktempo_postrace_eval_tools.pdf
+│       │   ├── tracktempo_transformer_evaluation_pipeline.pdf
+│       │   └── tracktempo_transformer_lifecycle_overview.pdf
+│       └── 20250331
+│           ├── dynamic_padding_batching_guide.pdf
+│           ├── pipeline_summary_finalized_2025-03-31.pdf
+│           ├── preprocessing_pipeline_plan.pdf
+│           └── preprocessing_pipeline_summary_2025-03-31.pdf
+├── modeling
+│   ├── embedding_heads.py
+│   ├── __init__.py
+│   ├── inputs_config.py
+│   ├── __pycache__
+│   │   ├── embedding_heads.cpython-311.pyc
+│   │   ├── __init__.cpython-311.pyc
+│   │   ├── inputs_config.cpython-311.pyc
+│   │   └── transformer_model.cpython-311.pyc
+│   ├── race_relative_modeling_plan.md
+│   └── transformer_model.py
+├── notebooks
+│   └── legacy_pipeline_notebooks
+│       ├── convert_inference_model_for_training_20250402.ipynb
+│       ├── preprocessing_pipeline_notebook_20250331.ipynb
+│       ├── train_transformer_20250402.ipynb
+│       └── trial_forward_pass_20250402.ipynb
+├── predictions
+│   ├── inference_output_20250408.csv
+│   └── inference_output_apr08.csv
+├── README.md
+├── scripts
+│   ├── __init__.py
+│   ├── pipelines
+│   │   ├── evaluate_pipeline.py
+│   │   ├── evaluate_pipeline_trainset.py
+│   │   ├── infer_and_export_predictions.py
+│   │   ├── infer_pipeline.py
+│   │   ├── __init__.py
+│   │   ├── merge_pipeline.py
+│   │   ├── preprocess_pipeline.py
+│   │   └── training_pipeline.py
+│   └── __pycache__
+│       ├── flatten_day_batch_pkl.cpython-311.pyc
+│       ├── flatten_day.cpython-311.pyc
+│       ├── __init__.cpython-311.pyc
+│       └── save_model_ready_df.cpython-311.pyc
+├── Untitled.ipynb
+└── utils
+    ├── audits
+    │   ├── create_audit_zip_20250405.py
+    │   └── __pycache__
+    │       └── create_audit_zip_20250405.cpython-311.pyc
+    ├── batching
+    │   ├── batch_races.py
+    │   └── __pycache__
+    │       └── batch_races.cpython-311.pyc
+    ├── create_file_structure_utility_2025-03-27.ipynb
+    ├── evaluation
+    │   ├── eval_metrics.py
+    │   └── __pycache__
+    │       └── eval_metrics.cpython-311.pyc
+    ├── __init__.py
+    ├── io
+    │   ├── embedding_io.py
+    │   ├── __pycache__
+    │   │   └── embedding_io.cpython-311.pyc
+    │   └── save_model_ready_df.py
+    ├── postprocessing
+    │   ├── enriched_predictions.py
+    │   ├── evaluate_winner_placing_accuracy.py
+    │   └── __init__.py
+    ├── postrace
+    │   ├── enrich_model_ready.py
+    │   └── parse_postrace_csv.py
+    ├── preprocessing
+    │   ├── add_embedding_indices.py
+    │   ├── clean_flattened_df.py
+    │   ├── flatten_day_batch_pkl.py
+    │   ├── flatten_day.py
+    │   ├── process_text_fields.py
+    │   └── __pycache__
+    │       ├── add_embedding_indices.cpython-311.pyc
+    │       ├── apply_encoders.cpython-311.pyc
+    │       ├── clean_flattened_df.cpython-311.pyc
+    │       ├── flatten_day_batch_pkl.cpython-311.pyc
+    │       ├── flatten_day.cpython-311.pyc
+    │       ├── __init__.cpython-311.pyc
+    │       └── process_text_fields.cpython-311.pyc
+    ├── __pycache__
+    │   ├── add_embedding_indices.cpython-311.pyc
+    │   ├── clean_flattened_df.cpython-311.pyc
+    │   ├── embedding_io.cpython-311.pyc
+    │   ├── embed_text_fields_vectorized.cpython-311.pyc
+    │   ├── extract_race_phrases.cpython-311.pyc
+    │   ├── __init__.cpython-311.pyc
+    │   ├── postrace_enrichment.cpython-311.pyc
+    │   ├── process_text_fields.cpython-311.pyc
+    │   ├── save_model_ready_df.cpython-311.pyc
+    │   └── save_npz_embeddings.cpython-311.pyc
+    ├── testing
+    │   ├── __pycache__
+    │   │   ├── seed_everything.cpython-311.pyc
+    │   │   └── testing_utils.cpython-311.pyc
+    │   ├── seed_everything.py
+    │   └── testing_utils.py
+    ├── training
+    │   ├── dataloader_utils.py
+    │   ├── __init__.py
+    │   ├── loss_factory_old.py
+    │   ├── loss_factory.py
+    │   ├── loss_hybrid_utils.py
+    │   ├── loss_ranking_utils.py
+    │   ├── loss_utils.py
+    │   ├── merge_inference_and_results.py
+    │   └── __pycache__
+    │       ├── dataloader_utils.cpython-311.pyc
+    │       ├── __init__.cpython-311.pyc
+    │       ├── loss_factory.cpython-311.pyc
+    │       ├── loss_hybrid_utils.cpython-311.pyc
+    │       ├── loss_ranking_utils.cpython-311.pyc
+    │       ├── loss_utils.cpython-311.pyc
+    │       └── merge_inference_and_results.cpython-311.pyc
+    └── validation
+        └── merge_diagnostics.py
+
+67 directories, 206 files
