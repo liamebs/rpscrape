@@ -1,7 +1,7 @@
-
 import numpy as np
 import torch
 import pandas as pd
+import logging
 
 def batch_races(df, float_cols, idx_cols, nlp_cols, exclude_non_runners=True, label_col=None, min_runners=1):
     batches = []
@@ -12,11 +12,25 @@ def batch_races(df, float_cols, idx_cols, nlp_cols, exclude_non_runners=True, la
             race = race[race["non_runner_flag"] == False]
 
         if len(race) < min_runners:
+            logging.warning(f"Race {race['race_id'].iloc[0]} skipped due to insufficient runners: {len(race)}")
             continue
 
-        race = race.sort_values("draw" if "draw" in race.columns else "name")
+        # Standardize sorting: use 'draw' if exists, otherwise 'runner'
+        if "draw" in race.columns:
+            sort_key = "draw"
+        elif "runner" in race.columns:
+            sort_key = "runner"
+        else:
+            sort_key = None
+
+        if sort_key:
+            race = race.sort_values(sort_key)
+        else:
+            logging.warning("No sorting key found ('draw' or 'runner'); proceeding with unsorted data.")
+
         R = len(race)
 
+        # Convert idx_cols to numeric ensuring no stray values
         race[idx_cols] = race[idx_cols].apply(pd.to_numeric, errors="coerce").fillna(0).astype("int64")
 
         batch_dict = {

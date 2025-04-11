@@ -7,6 +7,10 @@ from torch.utils.data import DataLoader
 from datetime import datetime
 import json
 import argparse
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Project setup
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -28,34 +32,41 @@ def main():
     float_cols_path = "data/processed/float_cols_2025-04-08.json"
     inference_data_path = "data/processed/model_ready_train_2025-04-06T04-16.pkl"
 
-    print("[+] Loading encoders and float feature list...")
+    logging.info("Loading encoders and float feature list...")
     encoders = joblib.load(encoders_path)
     with open(float_cols_path, "r") as f:
         float_cols = json.load(f)
 
     df = pd.read_pickle(inference_data_path)
+    
+    # Standardize the runner column early: convert "name" or "horse" to "runner"
+    if "name" in df.columns:
+        df.rename(columns={"name": "runner"}, inplace=True)
+    elif "horse" in df.columns:
+        df.rename(columns={"horse": "runner"}, inplace=True)
+
     before = len(df["race_id"].unique())
 
     # === Filter non-runners ===
     if "non_runner_flag" in df.columns:
         df = df[df["non_runner_flag"] == False].copy()
 
-    # Extract races actually used in training
+    # Extract races with at least min_runners participants
     grouped = df.groupby("race_id")
     eligible_races = [rid for rid, group in grouped if len(group) >= args.min_runners]
     df_filtered = df[df["race_id"].isin(eligible_races)]
     after = len(df_filtered["race_id"].unique())
-    print(f"[✓] Races after filtering: {after} (from {before})")
+    logging.info(f"Races after filtering: {after} (from {before})")
 
     cat_cols = list(encoders.keys())
     nlp_cols = ["comment_vector", "spotlight_vector"]
 
-    print("[+] Preparing batches for inference (labels not required)...")
+    logging.info("Preparing batches for inference (labels not required)...")
     batches = batch_races(df_filtered, float_cols, cat_cols, nlp_cols, label_col=None)
     race_ids = df_filtered.groupby("race_id").size().index.tolist()
     infer_loader = DataLoader(RaceDataset(batches, include_target=False), batch_size=1)
 
-    print("[+] Initializing model and loading checkpoint...")
+    logging.info("Initializing model and loading checkpoint...")
     model = RaceTransformer(
         label_encoders=encoders,
         float_dim=len(float_cols),
@@ -68,7 +79,7 @@ def main():
     model.load_state_dict(torch.load(model_checkpoint))
     model.eval()
 
-    print("[+] Running inference...")
+    logging.info("Running inference...")
     results = {}
     with torch.no_grad():
         for i, batch in enumerate(infer_loader):
@@ -90,7 +101,7 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
-    print(f"[✓] Predictions saved to: {output_path}")
+    logging.info(f"Predictions saved to: {output_path}")
 
 if __name__ == "__main__":
     main()
